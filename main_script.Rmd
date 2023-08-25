@@ -12,6 +12,7 @@ library(dplyr)
 library(ggplot2)
 library(readxl)
 library(janitor)
+library(lubridate)
 ```
 
 ## R Markdown
@@ -24,7 +25,15 @@ When you click the **Knit** button a document will be generated that includes bo
 dr_corsi_intervention_indoor <- read_excel("data/corsi/intervention/PSP00223_LOG_2023-05-17T21_02_32UTC_Dr_corsi________----------.xls") %>%
   slice(-c(1:113)) %>%
   slice(-2) %>%
-  row_to_names(row_number=1)
+  row_to_names(row_number=1) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal),
+         PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "intervention",
+         environment = "indoor")
+         
+ 
 
 
 
