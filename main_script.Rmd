@@ -80,3 +80,32 @@ dr_industrial_intervention_indoor <- read_excel("data/industrial/intervention/PS
          
 
 ```
+```{r dr cyclo control}
+dr_cyclo_control_indoor <- read_excel("data/cyclo/control/PSP00223_LOG_2023-06-27T15_37_48UTC_27_6_indoor_no__----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal),
+         PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "control",
+         environment = "indoor",
+         purifier = "cyclo")
+         
+
+```
+```{r dr cyclo intervention}
+dr_cyclo_intervention_indoor <- read_excel("data/cyclo/intervention/PSP00223_LOG_2023-06-27T19_06_15UTC_27_06_cyclo_____----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal),
+         PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "intervention",
+         environment = "indoor",
+         purifier = "cyclo")
+         
+```
