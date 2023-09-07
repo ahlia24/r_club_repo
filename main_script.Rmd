@@ -13,7 +13,7 @@ library(ggplot2)
 library(readxl)
 library(janitor)
 library(lubridate)
-library(tidyverse)
+library(purrr)
 ```
 
 ## R Markdown
