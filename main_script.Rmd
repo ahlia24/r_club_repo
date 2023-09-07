@@ -13,6 +13,7 @@ library(ggplot2)
 library(readxl)
 library(janitor)
 library(lubridate)
+library(tidyverse)
 ```
 
 ## R Markdown
@@ -107,5 +108,108 @@ dr_cyclo_intervention_indoor <- read_excel("data/cyclo/intervention/PSP00223_LOG
          test = "intervention",
          environment = "indoor",
          purifier = "cyclo")
+```
+
+```{r dr corsi intervention}
+dr_corsi_intervention_outdoor <- read_excel("data/corsi/intervention/PSP00225_LOG_2023-07-04T15_37_41UTC_04_07_outdoor___----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-07-04 11:42:00") & DateTimeLocal <= ymd_hms("2023-07-04 15:24:00")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "intervention",
+         environment = "outdoor",
+         purifier = "corsi")
          
 ```
+```{r dr corsi control}
+dr_corsi_control_outdoor <- read_excel("data/corsi/intervention/PSP00225_LOG_2023-07-04T15_37_41UTC_04_07_outdoor___----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-07-04 08:39:00") & DateTimeLocal <= ymd_hms("2023-07-04 11:41:00")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "control",
+         environment = "outdoor",
+         purifier = "corsi")
+         
+```
+```{r dr industrial control}
+dr_industrial_control_outdoor <- read_excel("data/industrial/intervention/PSP00225_LOG_2023-06-26T16_24_16UTC_Outdoor_112_____----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-06-26 09:16:00") & DateTimeLocal <= ymd_hms("2023-06-26 13:13:00")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "control",
+         environment = "outdoor",
+         purifier = "industrial")
+         
+```
+```{r dr industrial intervention}
+dr_industrial_intervention_outdoor <- read_excel("data/industrial/intervention/PSP00225_LOG_2023-06-26T16_24_16UTC_Outdoor_112_____----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-06-26 13:23:00") & DateTimeLocal <= ymd_hms("2023-06-26 15:32:00")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "intervention",
+         environment = "outdoor",
+         purifier = "industrial")
+         
+```
+```{r dr cyclo control}
+dr_cyclo_control_outdoor <- read_excel("data/cyclo/intervention/PSP00225_LOG_2023-06-27T15_42_50UTC_27_6_outdoor____----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-06-27 08:39:00") & DateTimeLocal <= ymd_hms("2023-06-27 11:38:00")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "control",
+         environment = "outdoor",
+         purifier = "cyclo")
+         
+```
+```{r dr cyclo intervention}
+dr_cyclo_intervention_outdoor <- read_excel("data/cyclo/intervention/PSP00225_LOG_2023-06-27T15_42_50UTC_27_6_outdoor____----------.xls") %>%
+  slice(-c(1:113)) %>%
+  slice(-2) %>%
+  row_to_names(row_number=1) %>%
+  mutate(DateTimeLocal = ymd_hms(DateTimeLocal)) %>%
+  filter(DateTimeLocal >= ymd_hms("2023-06-27 12:08:00") & DateTimeLocal <= ymd_hms("2023-06-27 15:15:30")) %>%
+  select(DateTimeLocal, PM2_5MC) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         facility = "doctors residence",
+         test = "intervention",
+         environment = "outdoor",
+         purifier = "cyclo")
+         
+```
+
+```{r BIND}
+
+data_frames <- ls(pattern = "^(dr_)")
+
+dfs <- map(data_frames, get)
+
+combined_df <- bind_rows(dfs) %>%
+  mutate(PM2_5MC = as.numeric(PM2_5MC),
+         log_concentration = log(PM2_5MC))
+
+```
+
