@@ -13,14 +13,7 @@ library(ggplot2)
 library(readxl)
 library(janitor)
 library(lubridate)
-library(purrr)
 ```
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r dr corsi intervention}
 dr_corsi_intervention_indoor <- read_excel("data/corsi/intervention/PSP00223_LOG_2023-07-04T18_46_33UTC_04_07_corsi_____----------.xls") %>%
@@ -36,6 +29,7 @@ dr_corsi_intervention_indoor <- read_excel("data/corsi/intervention/PSP00223_LOG
          purifier = "corsi")
          
 ```
+
 ```{r dr corsi control}
 dr_corsi_control_indoor <- read_excel("data/corsi/control/PSP00223_LOG_2023-07-04T15_24_07UTC_04_07_no_indoor_----------.xls") %>%
   slice(-c(1:113)) %>%
@@ -203,13 +197,27 @@ dr_cyclo_intervention_outdoor <- read_excel("data/cyclo/intervention/PSP00225_LO
 
 ```{r BIND}
 
-data_frames <- ls(pattern = "^(dr_)")
-
-dfs <- map(data_frames, get)
-
-combined_df <- bind_rows(dfs) %>%
+combined_df <- bind_rows(dr_corsi_control_indoor,
+                         dr_corsi_control_outdoor,
+                         dr_corsi_intervention_indoor,
+                         dr_corsi_intervention_outdoor,
+                         dr_cyclo_control_indoor,
+                         dr_cyclo_control_outdoor,
+                         dr_cyclo_intervention_indoor,
+                         dr_cyclo_intervention_outdoor,
+                         dr_industrial_control_indoor,
+                         dr_industrial_control_outdoor,
+                         dr_industrial_intervention_indoor,
+                         dr_industrial_intervention_outdoor) %>%
   mutate(PM2_5MC = as.numeric(PM2_5MC),
          log_concentration = log(PM2_5MC))
 
+```
+
+```{r}
+combined_df %>%
+  ggplot(aes(test, log_concentration, fill = environment)) +
+  geom_boxplot() +
+  facet_wrap(~ purifier)
 ```
 
